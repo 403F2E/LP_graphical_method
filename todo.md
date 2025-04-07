@@ -1,13 +1,13 @@
 # Linear Programming : **Graphical Method** 
 
 ## models (Entities) :
- - point :
+ - point : ### DONE
  **attributes** :
   - float x
   - float y
  **methods** :
   - ?
- - line :
+ - line : ### DONE
  **attributes** :
   - point a
   - point b
