@@ -19,6 +19,8 @@
   - float/int x2
   - line lines = []
  **methods** :
+  - get_lines : calculating the lines of the constraints ### IN_POGRESS
+  - get_intersections : calculating the intersections of all lines ### DONE
   - comparePoints : comparing the points with all the constraints
   - conclude : having the optimal point
   - draw : representing the system using matplotlib

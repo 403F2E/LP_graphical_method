@@ -7,10 +7,11 @@ class Point:
      - x : axis value of the point
      - y : axis value of the point
     '''
-    def __init__(self) -> None:
-        self.__x: float = 0
-        self.__y: float = 0
+    def __init__(self, x: float = 0, y: float = 0) -> None:
+        self.__x: float = x
+        self.__y: float = y
 
+    ''' getters of the private coords of the point '''
     @property
     def getx(self) -> float:
         return self.__x
@@ -19,6 +20,7 @@ class Point:
     def gety(self) -> float:
         return self.__y
 
+    ''' setters of the coords of the point '''
     @getx.setter
     def setX(self, pos: float) -> None:
         self.__x = pos
@@ -27,6 +29,7 @@ class Point:
     def setY(self, pos: float) -> None:
         self.__y = pos
 
+    ''' deconstructures of the coords of the point '''
     @getx.deleter
     def delX(self) -> None:
         del self.__x
@@ -47,6 +50,7 @@ class Line:
         self.__point1: Point = Point()
         self.__point2: Point = Point()
 
+    ''' getters of the points of the line '''
     @property
     def get_first_point(self) -> tuple[float, float]:
         return (self.__point1.getx, self.__point1.gety)
@@ -55,6 +59,7 @@ class Line:
     def get_second_point(self) -> tuple[float, float]:
         return (self.__point2.getx, self.__point2.gety)
 
+    '''setters of the points of the line '''
     @get_first_point.setter
     def set_first_point(self, point: Point) -> None:
         self.__point1.setX = point.getx
@@ -65,6 +70,7 @@ class Line:
         self.__point2.setX = point.getx
         self.__point2.setY = point.gety
 
+    ''' deconstructures of the points '''
     @get_first_point.deleter
     def del_first_point(self):
         del self.__point1
