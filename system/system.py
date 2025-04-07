@@ -1,7 +1,21 @@
 from graphElement.elements import Line
 
 class System:
+    """
+    The system class representing the system in question
+
+    represted with:
+     - constraints : the values of the constraints
+     - lines : the values of the lines of the constraints
+     - minOrmax : the chosen objectif function
+    """
     def __init__(self) -> None:
+        '''
+        Initializing the system
+
+        Args: 
+            None
+        '''
         self.__lines: list[Line] = []
         self.__constraints: list[tuple[int]] = []
         self.__minOrmax: bool = True

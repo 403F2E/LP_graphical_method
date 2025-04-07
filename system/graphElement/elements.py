@@ -71,6 +71,22 @@ class Line:
         del self.__point2
 
     def __add__(self, other: "Line") -> tuple[float, float] | None:
+        '''
+
+        Calculating the intersection between 2 lines according to their points of reference
+
+        we need 2 lines with 2 points of reference to calculate the intersection
+
+        Args : 
+
+        self : the first line 
+        other : the second line
+
+        Return : 
+
+        either a tuple with 2 floats representing the point of intersection
+        either the None if there is none
+        '''
         # get the coords of the first line
         p1: tuple[float, float] = self.get_first_point
         p2: tuple[float, float] = self.get_second_point
