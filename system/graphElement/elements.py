@@ -38,6 +38,13 @@ class Point:
     def delY(self) -> None:
         del self.__y
 
+    def __add__(self, other: "Point") -> float:
+        return self.__x * other.getx + self.__y * other.gety
+
+    def __sub__(self, other: "Point") -> float:
+        return self.__x * other.getx - self.__y * other.gety
+
+
 class Line:
     '''
     This the class representing the line unit in the graphical method
@@ -46,9 +53,9 @@ class Line:
      - point1 : low point at the graph
      - point2 : high point at the graph
     '''
-    def __init__(self) -> None:
-        self.__point1: Point = Point()
-        self.__point2: Point = Point()
+    def __init__(self, point1: Point = Point(0, 0), point2: Point = Point(0, 0)) -> None:
+        self.__point1: Point = point1
+        self.__point2: Point = point2
 
     ''' getters of the points of the line '''
     @property
