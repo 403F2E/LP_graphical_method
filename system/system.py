@@ -1,4 +1,4 @@
-from graphElement.elements import Line, Point
+from system.graphElement.elements import Line, Point
 
 class System:
     """
@@ -25,95 +25,114 @@ class System:
 
     ''' the getters of the private attributes '''
     @property
-    def get_constraints(self) -> list[tuple[Point, str, float]]:
+    def constraints(self) -> list[tuple[Point, str, float]]:
         return self.__constraints
 
     @property
-    def get_minOrmax(self) -> bool:
+    def minOrmax(self) -> bool:
         return self.__isMax
 
     @property
-    def get_objectif_func(self) -> tuple[Point, str]:
+    def objectif_func(self) -> tuple[Point, str]:
         return self.__objectif_func
 
     @property
-    def get_lines(self) -> list[Line]:
+    def lines(self) -> list[Line]:
         return self.__lines
 
     @property
-    def get_intersections(self) -> list[Point]:
+    def intersections(self) -> list[Point]:
         return self.__intersections
 
     ''' setters of the private attributes '''
-    @get_constraints.setter
-    def set_constraints(self, constraint: tuple[Point, str, float]) -> None:
+    @constraints.setter
+    def constraints(self, constraint: tuple[Point, str, float]) -> None:
         self.__constraints.append(constraint)
 
-    @get_minOrmax.setter
-    def set_minOrmax(self, choice: bool) -> None:
+    @minOrmax.setter
+    def minOrmax(self, choice: bool) -> None:
         self.__isMax = choice
 
-    @get_objectif_func.setter
-    def set_objectif_func(self, objectif_func: tuple[Point, str]) -> None:
+    @objectif_func.setter
+    def objectif_func(self, objectif_func: tuple[Point, str]) -> None:
         self.__objectif_func = objectif_func
 
-    @get_lines.setter
-    def set_line(self) -> None:
-        point1: Point = Point(123473411413, 0)
-        point2: Point = Point(-123473411413, 0)
-        point3: Point = Point(0, 123473411413)
-        point4: Point = Point(0, -123473411413)
+    @lines.setter
+    def lines(self, constraints: list[tuple[Point, str, float]]) -> None:
+        point1: Point = Point(1, 0)
+        point2: Point = Point(-1, 0)
+        point3: Point = Point(0, 1)
+        point4: Point = Point(0, -1)
         self.__lines.append(Line(point1, point2))
         self.__lines.append(Line(point3, point4))
-        for constraint in self.__constraints:
-            point1 = Point(constraint[0].getx + constraint[2], constraint[0].gety)
-            point2 = Point(constraint[0].getx, constraint[0].gety + constraint[2])
+        for constraint in constraints:
+            x1, x2, y1, y2 = constraint[0].dox, constraint[0].dox, constraint[0].doy, constraint[0].doy
+            if constraint[0].dox == 0:
+                y1 = 1
+                y2 = -1
+            elif constraint[0].doy == 0:
+                x1 = 1
+                x2 = -1
+            else:
+                x1 = 0
+                y1 = constraint[2] / constraint[0].doy
+                x2 = constraint[2] / constraint[0].dox
+                y2 = 0
+            point1 = Point(x1, y1)
+            point2 = Point(x2, y2)
             self.__lines.append(Line(point1, point2))
 
-    @get_intersections.setter
-    def set_intersections(self) -> None:
-        n_lines = len(self.__lines)
+    @intersections.setter
+    def intersections(self, lines: list[Line]) -> None:
+        n_lines = len(lines)
         for i in range(n_lines):
             for j in range(i+1, n_lines):
-                doesIntersect = self.__lines[i] + self.__lines[j]
+                doesIntersect = lines[i] + lines[j]
                 if not doesIntersect:
                     continue
-                self.__intersections.append(Point(doesIntersect[0], doesIntersect[1]))
+                self.__intersections.append(doesIntersect)
 
     ''' the deconstructures of the private attributes '''
-    @get_lines.deleter
-    def del_constraints(self) -> None:
+    @constraints.deleter
+    def constraints(self) -> None:
         del self.__constraints
 
-    @get_minOrmax.deleter
-    def del_minOrmax(self) -> None:
+    @minOrmax.deleter
+    def minOrmax(self) -> None:
         del self.__isMax
 
-    @get_objectif_func.deleter
-    def del_objectif_func(self) -> None:
+    @objectif_func.deleter
+    def objectif_func(self) -> None:
         del self.__objectif_func
 
-    @get_lines.deleter
-    def del_lines(self) -> None:
+    @lines.deleter
+    def lines(self) -> None:
         del self.__lines
 
-    @get_intersections.deleter
-    def del_intersections(self) -> None:
+    @intersections.deleter
+    def intersections(self) -> None:
         del self.__intersections
 
     def comparePoints(self) -> list[Point]:
         optimal_points: list[Point] = []
         for intersection in self.__intersections:
             for constraint in self.__constraints:
-                if constraint[1] == "add" and (intersection + constraint[0]) == constraint[2]:
-                    optimal_points.append(intersection) 
-                elif constraint[1] == "sub" and (intersection - constraint[0]) == constraint[2]:
-                    optimal_points.append(intersection)
+                if self.__isMax:
+                    if constraint[1] == "add" and (intersection + constraint[0]) <= constraint[2]:
+                        optimal_points.append(intersection) 
+                    elif constraint[1] == "sub" and (intersection - constraint[0]) <= constraint[2]:
+                        optimal_points.append(intersection)
+                else:
+                    if constraint[1] == "add" and (intersection + constraint[0]) >= constraint[2]:
+                        optimal_points.append(intersection) 
+                    elif constraint[1] == "sub" and (intersection - constraint[0]) >= constraint[2]:
+                        optimal_points.append(intersection)
         return optimal_points 
 
     def haveAnswer(self) -> Point:
         optimal_points: list[Point] = self.comparePoints()
-        optimal_point: Point = optimal_points[1]
+        print(optimal_points)
+        optimal_point: Point = optimal_points[0]
         possibility: float = optimal_point + self.__objectif_func[0]
         if self.__isMax:
             for point in optimal_points:
