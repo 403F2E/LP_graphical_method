@@ -44,6 +44,8 @@ class Point:
     def __sub__(self, other: "Point") -> float:
         return self.__x * other.dox - self.__y * other.doy
 
+    def __repr__(self) -> str:
+        return f'({self.dox}, {self.doy})'
 
 class Line:
     '''
@@ -110,34 +112,24 @@ class Line:
 
         # Line 1 vector
         A1: float = p2[1] - p1[1]
-        print(f'A1: float = {p2[1]} - {p1[1]}')
         B1: float = p1[0] - p2[0]
-        print(f'B1: float = {p1[0]} - {p2[0]}')
         C1: float = A1 * p1[0] + B1 * p1[1]
-        print(f'C1: float = {A1} * {p1[0]} + {B1} * {p1[1]}')
 
         # Line 2 vector
         A2: float = p4[1] - p3[1]
-        print(f'A2: float = {p4[1]} - {p3[1]}')
         B2: float = p3[0] - p4[0]
-        print(f'B2: float = {p3[0]} - {p4[0]}')
         C2: float = A2 * p3[0] + B2 * p3[1]
-        print(f'C2: float = {A2} * {p3[0]} + {B2} * {p3[1]}')
 
         # Determinant
         det: float = A1 * B2 - A2 * B1
-        print(f'det: float = {A1} * {B2} - {A2} * {B1}')
 
         if det == 0:
             return None  # Lines are parallel or coincident
 
-        x: float = (B2 * C1 - B1 * C2) / det
-        print(f'x: float = ({B2} * {C1} - {B1} * {C2}) / {det}')
+        x: float = (C1 * B2 - C2 * B1) / det
         y: float = (A1 * C2 - A2 * C1) / det
-        print(f'y: float = ({A1} * {C2} - {A2} * {C1}) / {det}')
-
-        print(self.__point1.dox, self.__point1.doy)
-        print(self.__point2.dox, self.__point2.doy)
-        print('\n')
 
         return Point(x, y)
+
+    def __repr__(self) -> str:
+        return f"({self.first_point}), ({self.second_point})"

@@ -1,3 +1,4 @@
+from numpy import positive
 from system.graphElement.elements import Line, Point
 
 class System:
@@ -18,7 +19,8 @@ class System:
             None
         '''
         self.__constraints: list[tuple[Point, str, float]] = []
-        self.__isMax: bool = True
+        self.__isMax: bool = False
+        self.__positivity: bool = False
         self.__objectif_func: tuple[Point, str] = tuple()
         self.__lines: list[Line] = []
         self.__intersections: list[Point] = []
@@ -31,6 +33,10 @@ class System:
     @property
     def minOrmax(self) -> bool:
         return self.__isMax
+
+    @property
+    def positivity(self) -> bool:
+        return self.__positivity
 
     @property
     def objectif_func(self) -> tuple[Point, str]:
@@ -53,6 +59,10 @@ class System:
     def minOrmax(self, choice: bool) -> None:
         self.__isMax = choice
 
+    @positivity.setter
+    def positivity(self, state: bool) -> None:
+        self.__positivity = state
+
     @objectif_func.setter
     def objectif_func(self, objectif_func: tuple[Point, str]) -> None:
         self.__objectif_func = objectif_func
@@ -66,18 +76,24 @@ class System:
         self.__lines.append(Line(point1, point2))
         self.__lines.append(Line(point3, point4))
         for constraint in constraints:
+            if constraint[2] == 0:
+                self.positivity = True
             x1, x2, y1, y2 = constraint[0].dox, constraint[0].dox, constraint[0].doy, constraint[0].doy
             if constraint[0].dox == 0:
-                y1 = 1
-                y2 = -1
-            elif constraint[0].doy == 0:
-                x1 = 1
-                x2 = -1
-            else:
-                x1 = 0
+                x1 = constraint[2]
+                x2 = -constraint[2]
                 y1 = constraint[2] / constraint[0].doy
-                x2 = constraint[2] / constraint[0].dox
-                y2 = 0
+                y2 = y1
+            elif constraint[0].doy == 0:
+                x1 = constraint[2] / constraint[0].dox
+                x2 = x1
+                y1 = constraint[2]
+                y2 = -constraint[2]
+            else:
+                x1 = constraint[2] / constraint[0].doy
+                y1 = 0
+                x2 = 0
+                y2 = constraint[2] / constraint[0].dox
             point1 = Point(x1, y1)
             point2 = Point(x2, y2)
             self.__lines.append(Line(point1, point2))
@@ -88,9 +104,8 @@ class System:
         for i in range(n_lines):
             for j in range(i+1, n_lines):
                 doesIntersect = lines[i] + lines[j]
-                if not doesIntersect:
-                    continue
-                self.__intersections.append(doesIntersect)
+                if doesIntersect:
+                    self.__intersections.append(doesIntersect)
 
     ''' the deconstructures of the private attributes '''
     @constraints.deleter
@@ -117,6 +132,8 @@ class System:
         optimal_points: list[Point] = []
         for intersection in self.__intersections:
             for constraint in self.__constraints:
+                if self.positivity and (intersection.dox < 0 or intersection.doy < 0) or (intersection.dox == 0 and intersection.doy == 0):
+                    continue
                 if self.__isMax:
                     if constraint[1] == "add" and (intersection + constraint[0]) <= constraint[2]:
                         optimal_points.append(intersection) 
@@ -131,7 +148,6 @@ class System:
 
     def haveAnswer(self) -> Point:
         optimal_points: list[Point] = self.comparePoints()
-        print(optimal_points)
         optimal_point: Point = optimal_points[0]
         possibility: float = optimal_point + self.__objectif_func[0]
         if self.__isMax:
@@ -140,19 +156,23 @@ class System:
                     possible_point: float = point + self.__objectif_func[0]
                     if possible_point > possibility:
                         optimal_point = point
+                        possibility = possible_point
                 elif self.__objectif_func[1] == "sub":
                     possible_point: float = point - self.__objectif_func[0]
                     if possible_point > possibility:
                         optimal_point = point
+                        possibility = possible_point
         else:
             for point in optimal_points:
                 if self.__objectif_func[1] == "add":
                     possible_point: float = point + self.__objectif_func[0]
                     if possible_point < possibility:
                         optimal_point = point
+                        possibility = possible_point
                 elif self.__objectif_func[1] == "sub":
                     possible_point: float = point - self.__objectif_func[0]
                     if possible_point < possibility:
                         optimal_point = point
+                        possibility = possible_point
 
         return optimal_point
