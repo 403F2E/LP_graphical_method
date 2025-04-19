@@ -85,7 +85,12 @@ def mold() -> list:
     print("\n")
 
     ''' Reading the objectif function '''
-    print(" --- \\\\ What is the objectif function related to your system : ")
+    print("\n --- \\\\ Are Minimizing or Maximazing : ")
+    print("0/ Minimizing")
+    print("1/ Maximazing")
+    minOrmax: int = int(input("Enter the wanted functionality : "))
+    objectif: bool = True if minOrmax == 1 else False
+    print("\n --- \\\\ What is the objectif function related to your system : ")
     x1: float = float(input("Enter the X1's factor : "))
     x2: float =  float(input("Enter the X2's factor : "))
     print("0/ addition (+)")
@@ -99,7 +104,7 @@ def mold() -> list:
     print("\n")
     nbr_cst = int(input(" --- \\\\ How many constraint do you have : "))
     for i in range(nbr_cst):
-        print(f" --- \\\\ Enter the constraint {i+1} : ")
+        print(f"\n --- \\\\ Enter the constraint {i+1} : ")
         x1: float = float(input("Enter the X1's factor : "))
         x2: float =  float(input("Enter the X2's factor : "))
         print("0/ addition (+)")
@@ -109,7 +114,7 @@ def mold() -> list:
         limit: float = float(input("Enter the limit of this constraint : "))
         constraints.append((Point(x1, x2), op, limit))
 
-    return [objectif_func, constraints]
+    return [objectif, objectif_func, constraints]
 
 def solve(system: System) -> Point:
     system.lines = system.constraints
@@ -120,14 +125,10 @@ def solve(system: System) -> Point:
 
 if __name__=='__main__':
     system = System()
-    # system_content = mold()
-    system.objectif_func = (Point(1, 1), "add") # system_content[0]
-    system.constraints = (Point(1, 0), "add", 20)
-    system.constraints = (Point(0, 1), "add", 30)
-    system.constraints = (Point(2, 0), "add", 80)
-    system.constraints = (Point(0, 1.5), "add", 120)
-    system.constraints = (Point(1, 0), "add", 0)
-    system.constraints = (Point(0, 1), "add", 0)
-    system.minOrmax = True
+    system_content = mold()
+    system.minOrmax = system_content[0]
+    system.objectif_func = system_content[1]
+    for constraint in system_content[2]:
+        system.constraints = constraint
     answer: Point = solve(system)
     print(f"The point is ({answer.dox}, {answer.doy})")
